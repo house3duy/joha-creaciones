@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es-UY">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101e36">
+  <meta name="description" content="Datos para transferir a Johanna Hermin. Copiá fácilmente la cuenta BROU o Prex.">
+  <title>Cuentas para transferir | Johanna Hermin</title>
+  <style>
+    :root {color-scheme: light;--ink:#14243e;--muted:#66748b;--blue:#295fce;--outline:#e5eaf2;--bg:#f5f7fc}
+    * { box-sizing:border-box; }
+    body {margin:0;min-height:100vh;background:var(--bg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+    header {background:linear-gradient(135deg,#101e36,#254476);padding:56px 20px 90px;color:white;text-align:center}
+    .eyebrow {display:inline-block;font-weight:750;letter-spacing:.14em;font-size:.7rem;color:#9fcaed;text-transform:uppercase;margin-bottom:13px}
+    h1 {font-size:clamp(1.8rem,5vw,2.55rem);letter-spacing:-.05em;line-height:1.13;margin:0 0 13px}
+    .intro {color:#d8e4f4;margin:0;font-size:.96rem;line-height:1.6}
+    main {width:min(100% - 32px,580px);margin:-53px auto 42px;position:relative}
+    .cards {display:grid;gap:16px}
+    article {background:white;padding:24px;border:1px solid var(--outline);border-radius:20px;box-shadow:0 8px 28px #2134570b}
+    .bank-top {display:flex;align-items:center;gap:13px;margin-bottom:22px}
+    .bank-icon {display:grid;place-items:center;width:45px;height:45px;flex:none;background:#edf3ff;border-radius:13px;color:var(--blue)}
+    .bank-icon svg {width:24px;height:24px}
+    h2 {font-size:1.2rem;letter-spacing:-.025em;margin:0 0 3px}
+    .sub {font-size:.79rem;color:var(--muted);margin:0}
+    .field-label {font-size:.73rem;font-weight:750;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 8px}
+    .account-number {font-size:clamp(1.05rem,4vw,1.33rem);font-weight:760;letter-spacing:.01em;line-height:1.55;overflow-wrap:anywhere;margin:0 0 18px;user-select:all}
+    .account-number.is-empty {color:#9ca7b8;font-size:1rem;font-weight:500}
+    .owner {border-top:1px solid var(--outline);padding-top:15px;margin-top:22px;font-size:.88rem;color:var(--muted);line-height:1.5}
+    .owner strong {color:var(--ink);font-weight:650}
+    button {font:inherit;border:0;cursor:pointer;min-height:50px;background:var(--blue);color:white;border-radius:12px;width:100%;font-weight:730;font-size:.98rem;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .16s,transform .16s}
+    button:active:not(:disabled) {transform:scale(.985)}
+    button:focus-visible {outline:3px solid #7fc6ff;outline-offset:3px}
+    button:hover:not(:disabled) {background:#1e4eaf}
+    button:disabled {background:#dde4ee;color:#7b889b;cursor:not-allowed}
+    button svg {width:19px;height:19px;flex:none}
+    .hint {display:flex;align-items:flex-start;gap:10px;margin:22px auto 0;padding:0 5px;font-size:.8rem;color:#63728a;line-height:1.5}
+    .hint svg {flex:none;margin-top:1px}
+    footer {text-align:center;padding:0 12px 26px;font-size:.75rem;color:#8993a4}
+    #toast {position:fixed;bottom:23px;left:50%;transform:translate(-50%,16px);background:#12233d;color:white;box-shadow:0 10px 34px #071c3744;padding:13px 18px;border-radius:12px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:calc(100vw - 30px);width:max-content;text-align:center;z-index:10;font-size:.88rem}
+    #toast.visible {opacity:1;transform:translate(-50%,0)}
+    @media (prefers-reduced-motion:reduce) {* {transition:none !important;scroll-behavior:auto !important}}
+  </style>
+</head>
+<body>
+  <header>
+    <span class="eyebrow">Información de pago</span>
+    <h1>Datos para transferir</h1>
+    <p class="intro">Elegí una de las cuentas y tocá el botón<br>para copiar el número en un instante.</p>
+  </header>
+  <main>
+    <section class="cards" id="lista-cuentas" aria-label="Cuentas bancarias"></section>
+    <p class="hint">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>
+      Verificá los datos y el destinatario antes de confirmar la transferencia en tu banco.
+    </p>
+  </main>
+  <footer>Datos de pago · Johanna Hermin</footer>
+  <div role="status" aria-live="polite" aria-atomic="true" id="toast"></div>
+  <script>
+    // Datos visibles para las personas que visiten esta página.
+    const cuentas = [
+      {
+        banco: "BROU",
+        tipo: "Cuenta bancaria",
+        numero: "00193089400001",
+        titular: "Johanna Hermin"
+      },
+      {
+        banco: "Prex",
+        tipo: "Cuenta Prex",
+        numero: "23759913",
+        titular: "Johanna Hermin"
+      }
+    ];
+
+    const iconBank = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-6 9 6M4 10h16M6 10v8m4-8v8m4-8v8m4-8v8M3 21h18M3 18h18"/></svg>';
+    const iconCopy = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>';
+    const iconCheck = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>';
+    const list = document.getElementById('lista-cuentas');
+    const toast = document.getElementById('toast');
+    let toastTimer;
+
+    function notify(message) {
+      toast.textContent = message;
+      toast.classList.add('visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('visible'), 2300);
+    }
+
+    async function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.focus();
+        area.select();
+        const ok = document.execCommand('copy');
+        area.remove();
+        if (!ok) throw new Error('No se pudo copiar');
+      }
+    }
+
+    cuentas.forEach((cuenta, index) => {
+      const article = document.createElement('article');
+      const bankTop = document.createElement('div');
+      bankTop.className = 'bank-top';
+      const bankIcon = document.createElement('div');
+      bankIcon.className = 'bank-icon';
+      bankIcon.innerHTML = iconBank;
+      const bankDetails = document.createElement('div');
+      const title = document.createElement('h2');
+      title.textContent = cuenta.banco;
+      const type = document.createElement('p');
+      type.className = 'sub';
+      type.textContent = cuenta.tipo;
+      bankDetails.append(title, type);
+      bankTop.append(bankIcon, bankDetails);
+      const label = document.createElement('p');
+      label.className = 'field-label';
+      label.textContent = 'Número de cuenta';
+      const number = document.createElement('p');
+      number.className = 'account-number';
+      const hasNumber = Boolean(cuenta.numero.trim());
+      number.textContent = hasNumber ? cuenta.numero : 'Pendiente de configurar';
+      if (!hasNumber) number.classList.add('is-empty');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.disabled = !hasNumber;
+      button.innerHTML = iconCopy + '<span>Copiar número de cuenta</span>';
+      button.setAttribute('aria-label', 'Copiar número de cuenta de ' + cuenta.banco);
+      button.addEventListener('click', async () => {
+        try {
+          await copyText(cuenta.numero);
+          button.innerHTML = iconCheck + '<span>¡Copiado!</span>';
+          notify('¡Cuenta de ' + cuenta.banco + ' copiada!');
+          setTimeout(() => {button.innerHTML = iconCopy + '<span>Copiar número de cuenta</span>';}, 1900);
+        } catch (error) {
+          notify('No se pudo copiar. Mantené presionado el número para seleccionarlo.');
+        }
+      });
+      const owner = document.createElement('div');
+      owner.className = 'owner';
+      owner.append(document.createTextNode('Titular: '));
+      const ownerName = document.createElement('strong');
+      ownerName.textContent = cuenta.titular;
+      owner.append(ownerName);
+      article.append(bankTop, label, number, button, owner);
+      list.append(article);
+    });
+  </script>
+</body>
+</html>
